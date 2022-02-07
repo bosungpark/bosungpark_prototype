@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # Third Party apps
     "rest_framework",
     # my apps
+    "testproject"
 ]
 
 MIDDLEWARE = [

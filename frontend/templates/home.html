@@ -18,7 +18,7 @@
     테스트 샘플<br><br>
     {% for data in datas %}
         {% if data.image %}
-            <a href="{% url 'testproject:detail' data.id %}"><img src="{{data.image.url}}" width=100 /></a><br>
+            <a href="{% url 'testproject:click' data.id %}"><img src="{{data.image.url}}" width=100 /></a><br>
         {% endif %}
         조회수: {{ data.views_cnt }}<br>
         글자수: {{ data.text_length }}<br>

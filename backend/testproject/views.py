@@ -8,6 +8,6 @@ class Home(View):
         datas=testData.objects.all
         return render(request, "home.html",{'datas':datas})
 
-def detail(request, id):
+def click(request, id):
     data=get_object_or_404(testData, pk = id)
-    return render(request, 'detail.html', {'data': data})
+    return render(request, 'click.html', {'data': data})

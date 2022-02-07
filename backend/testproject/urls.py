@@ -5,5 +5,5 @@ app_name='testproject'
 
 urlpatterns = [
     path('', views.Home.as_view(), name="home"),
-    path('<int:id>', views.detail, name='detail'),
+    path('<int:id>', views.click, name='click'),
 ]

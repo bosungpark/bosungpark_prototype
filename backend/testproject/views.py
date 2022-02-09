@@ -6,8 +6,9 @@ class Home(View):
 
     def get(self, request):
         datas=testData.objects.all
-        return render(request, "home.html",{'datas':datas})
+        return render(request, "index.html",{'datas':datas})
 
 def click(request, id):
     data=get_object_or_404(testData, pk = id)
+    data.views_cnt+=1
     return render(request, 'click.html', {'data': data})

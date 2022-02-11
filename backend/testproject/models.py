@@ -5,8 +5,11 @@ from django.db import models
 class testData(models.Model):
     id= models.AutoField(primary_key=True, null=False, blank=False)
 
-    views_cnt=models.IntegerField(null=True,blank=True)#조회수
+    views_cnt=models.IntegerField(null=True,blank=True)#조회수  
+    impressions_cnt=models.IntegerField(default=1)#노출수
     text_length=models.IntegerField(null=True,blank=True)#글자 길이
     image_cnt=models.IntegerField(null=True,blank=True,default=1)#이미지 갯수
 
     image=models.ImageField(upload_to="images",null=True, blank=True)#이미지
+    
+    importance=models.IntegerField(null=True,blank=True,default=0)#중요도

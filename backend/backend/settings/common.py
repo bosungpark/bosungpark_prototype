@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 
     # Third Party apps
     "rest_framework",
+    'django_seed',
     # my apps
     "testproject"
 ]
@@ -115,10 +116,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'frontend/static/'
-# STATIC_ROOT = os.path.join(FRONTEND_DIR, "static")
+STATIC_URL = 'static/'
+#STATIC_ROOT = os.path.join(FRONTEND_DIR, "static")
+
 STATICFILES_DIRS=[
-    os.path.join(FRONTEND_DIR/'frontend/static/')
+    os.path.join(FRONTEND_DIR, 'static')
 ]
 
 MEDIA_URL = "media/"

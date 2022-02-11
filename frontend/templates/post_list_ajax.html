@@ -1,41 +1,6 @@
-<!DOCTYPE html>
-{% comment %} {% load static %}  {% endcomment %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    
-    <link rel="stylesheet" href='frontend/static/css/reset.css'>
-    <link rel="stylesheet" href='frontend/static/css/common.css'>
-    <link rel="stylesheet" href='frontend/static/css/style.css'>    
-    
-    <title>mobldi</title>
+{% load static %}
 
-</head>
-<body>
-    <header id="header">
-        <section class="inner">
-
-            <h1 class="logo">
-                <a href="index.html">
-                    <img src="frontend/static/images/logo.png" alt="프로필이미지" width=150>
-                </a>
-            </h1>
-
-            <div class="search_box">
-                <input type="text" placeholder="검색" id="search-field">
-
-                <div class="fake_field">
-                    <span class="sprite_small_search_icon"></span>
-                    <span>검색</span>
-                </div>
-            </div>
-
-        </section>
-
-    </header>
-
-    {% for data in datas %}
+{% for data in posts %}
     <section id="main_container">
         <div class="inner">
 
@@ -64,7 +29,7 @@
 
                     <div class="img_section">
                         <div class="trans_inner">
-                            <img src="{{data.image.url}}" alt="visual01">
+                            <a href="{% url 'testproject:click' data.id %}"><img src="{{data.image.url}}" alt="visual01"></a>
                         </div>
                     </div>
 
@@ -82,8 +47,8 @@
                     </div>
 
                     <div class="likes m_text">
-                        좋아요
-                        <span id="like-count-39">2,346</span>
+                        조회수
+                        <span id="like-count-39">{{ data.views_cnt }}</span>
                         <span id="bookmark-count-39"></span>
                         개
                     </div>
@@ -92,7 +57,7 @@
                         <div class="comment" id="comment-list-ajax-post37">
                             <div class="comment-detail">
                                 <div class="nick_name m_text">dongdong2</div>
-                                <div>제니 사랑해요~!</div>
+                                <div>글자수:{{ data.text_length }}</div>
                             </div>
                         </div>
                         <div class="small_heart">
@@ -146,9 +111,7 @@
         </div>
     </section>
     {% endfor %}
-</section>
 
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-<script src="js/main.js"></script>
-</body>
-</html>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="js/main.js"></script>
+    

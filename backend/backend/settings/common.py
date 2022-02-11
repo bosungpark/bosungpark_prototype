@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     "rest_framework",
     'django_seed',
     # my apps
-    "testproject"
+    "testproject",
+    "account.apps.AccountConfig",
 ]
 
 MIDDLEWARE = [
@@ -128,3 +129,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
 ]
+
+AUTH_USER_MODEL = 'account.User'

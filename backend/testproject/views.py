@@ -10,27 +10,27 @@ from rest_framework.response import Response
 from rest_framework import status
 from . import pagination as post_paginations
 
-# # 페이지네이션 커스텀 버전
-# class PostPagination(PageNumberPagination):
-#     page_size = 1
+# 페이지네이션 커스텀 버전
+class PostPagination(PageNumberPagination):
+    page_size = 1
 
 
-# class PostListView(APIView, post_paginations.PaginationHandlerMixin):
-#     pagination_class = PostPagination
-#     serializer_class = post_serializer.PostSerializer
+class PostListView(APIView, post_paginations.PaginationHandlerMixin):
+    pagination_class = PostPagination
+    serializer_class = post_serializer.PostSerializer
 
-#     def get(self, request):
-#         posts = testData.objects.all()
+    def get(self, request):
+        posts = testData.objects.all()
 
-#         page = self.paginate_queryset(posts)
+        page = self.paginate_queryset(posts)
 
-#         if page is not None:
-#             serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
-#             print("데이터 ", serializer)
-#         else:
-#             serializer = self.serializer_class(posts, many=True)
-#             print("데이터 ", serializer.data)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+            print("데이터 ", serializer)
+        else:
+            serializer = self.serializer_class(posts, many=True)
+            print("데이터 ", serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 def __init__(self):

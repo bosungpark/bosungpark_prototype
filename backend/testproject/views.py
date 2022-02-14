@@ -80,7 +80,7 @@ def post_list(request):
         post.importance=score
         post.save()
 
-    post_list=testData.objects.all().order_by('importance')
+    post_list=testData.objects.all().order_by('-importance')
 
     paginator= Paginator(post_list, 1)
     page_num= request.GET.get('page')

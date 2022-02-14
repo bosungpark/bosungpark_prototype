@@ -9,6 +9,7 @@ from . import serializer as post_serializer
 from rest_framework.response import Response
 from rest_framework import status
 from . import pagination as post_paginations
+from scipy.stats import beta
 
 # 페이지네이션 커스텀 버전
 class PostPagination(PageNumberPagination):
@@ -72,11 +73,14 @@ def __init__(self):
         
 def post_list(request):
     post_list=testData.objects.all()
+
     for post in post_list:
-        score=post.views_cnt//post.impressions_cnt
+        score=beta.rvs(post.views_cnt, post.impressions_cnt, size = 100)
+        # 각 게시물의 베타분포값을 importance 필드에 넣는다. 
         post.importance=score
         post.save()
-    post_list=testData.objects.all().order_by('-importance')
+
+    post_list=testData.objects.all().order_by('importance')
 
     paginator= Paginator(post_list, 1)
     page_num= request.GET.get('page')

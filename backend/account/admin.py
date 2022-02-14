@@ -3,7 +3,7 @@ from .models import *
 
 
 def getFieldsModel(model):
-    return ['email','login_method']
+    return ['email']
 
 class UserAdmin(admin.ModelAdmin):
     list_display = getFieldsModel(User)

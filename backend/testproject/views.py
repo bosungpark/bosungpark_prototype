@@ -1,5 +1,6 @@
 from pickle import TRUE
-from django.shortcuts import render, get_object_or_404
+import re
+from django.shortcuts import redirect, render, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.views import View
 from . models import testData
@@ -11,30 +12,11 @@ from rest_framework import status
 from . import pagination as post_paginations
 from scipy.stats import beta
 
-# 페이지네이션 커스텀 버전
-class PostPagination(PageNumberPagination):
-    page_size = 1
-
-
-class PostListView(APIView, post_paginations.PaginationHandlerMixin):
-    pagination_class = PostPagination
-    serializer_class = post_serializer.PostSerializer
-
-    def get(self, request):
-        posts = testData.objects.all()
-
-        page = self.paginate_queryset(posts)
-
-        if page is not None:
-            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
-            print("데이터 ", serializer)
-        else:
-            serializer = self.serializer_class(posts, many=True)
-            print("데이터 ", serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+import math
+import time
 
 def __init__(self):
+    print("init starts")
       # '0' as a reward from each ad
     ones = [] # '1' as a reward from each ad
     zeros = []
@@ -57,48 +39,54 @@ def __init__(self):
     # 알파, 베타값의 배열 초기화 
     for _ in range(rounds):
         for i, a in enumerate(arms):  # 랜덤추출 
-            value = np.random.binomial(1, a, rounds) # 0 or 1 
+            value = np.random.binomial(1, a, rounds) # arms의 확률대로 초기화:  0 or 1 
             if value == 1: 
                 self.ones[i] += 1
             else:
                 self.zeros[i]+= 1
     
     post_list=testData.objects.all()
+
     for i, post in enumerate(post_list):
         post.views_cnt =  ones[i]
+        print(f"views_cnt : {post.views_cnt}")
         post.impressions_cnt=  zeros[i]
         post.save()
+    print("init ends")
 
             
         
 def post_list(request):
-    post_list=testData.objects.all()
+
+    post_list=testData.objects.prefetch_related("user").all()
 
     for post in post_list:
         score=beta.rvs(post.views_cnt, post.impressions_cnt)
-        # 각 게시물의 베타분포값을 importance 필드에 넣는다. 
-        post.importance=score
+        post.importance = score
         post.save()
 
-    post_list=testData.objects.all().order_by('-importance')
+    post_list = testData.objects.prefetch_related("user").order_by("-importance").all()
+
 
     paginator= Paginator(post_list, 1)
     page_num= request.GET.get('page')
     
-
     try:
         posts=paginator.get_page(page_num)
+
+        for post in posts:
+            post.impressions_cnt+=1
+            post.save()
+            print(post.impressions_cnt)
+
     except PageNotAnInteger:
         posts=paginator.page(1)
     except EmptyPage:
         posts=paginator.page(paginator.num_pages)
 
-    for post in posts:
-        post.impressions_cnt+=1
-        post.save()
-        print(post.impressions_cnt)
-
     return render(request, "post_list.html",{'posts':posts})
+
+
 
 import numpy as np
 import pandas as pd
@@ -175,7 +163,63 @@ def thompson_sampling():
     return ranks
 
 def click(request, id):
+       
     data=get_object_or_404(testData, pk = id)
     data.views_cnt+=1
-    data.save()
-    return render(request, 'click.html')
+    start = time.time()
+
+    return render(request, 'click.html',{'start':start})
+
+def toHome(request):
+    
+    start=request.start
+    end = time.time()
+    print( end - start,"sec")
+
+    post_list=testData.objects.all()
+    for post in post_list:
+        score=post.views_cnt//post.impressions_cnt
+        post.importance=score
+        post.save()
+    post_list=testData.objects.all().order_by('-importance')
+
+    paginator= Paginator(post_list, 1)
+    page_num= request.GET.get('page')
+    
+    try:
+        posts=paginator.get_page(page_num)
+    except PageNotAnInteger:
+        posts=paginator.page(1)
+    except EmptyPage:
+        posts=paginator.page(paginator.num_pages)
+
+    for post in posts:
+        post.impressions_cnt+=1
+        post.save()
+        print(post.impressions_cnt)
+
+    return render(request, "post_list.html",{'posts':posts})
+
+   
+
+# # 페이지네이션 커스텀 버전
+# class PostPagination(PageNumberPagination):
+#     page_size = 1
+
+
+# class PostListView(APIView, post_paginations.PaginationHandlerMixin):
+#     pagination_class = PostPagination
+#     serializer_class = post_serializer.PostSerializer
+
+#     def get(self, request):
+#         posts = testData.objects.all()
+
+#         page = self.paginate_queryset(posts)
+
+#         if page is not None:
+#             serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+#             print("데이터 ", serializer)
+#         else:
+#             serializer = self.serializer_class(posts, many=True)
+#             print("데이터 ", serializer.data)
+#         return Response(serializer.data, status=status.HTTP_200_OK)

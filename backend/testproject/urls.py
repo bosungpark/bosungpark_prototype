@@ -5,6 +5,7 @@ app_name='testproject'
 
 urlpatterns = [
     path('', views.post_list, name="post_list"),
-    path('post/post-list', views.PostListView.as_view(), name="post-list"),
+    # path('post/post-list', views.PostListView.as_view(), name="post-list"),
     path('<int:id>', views.click, name='click'),
+    # path('', views.toHome, name='toHome'),
 ]

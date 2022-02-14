@@ -19,10 +19,6 @@ class LoginForm(forms.Form):
     except models.User.DoesNotExist:
       self.add_error('email', forms.ValidationError('User does not exist'))
 
-  # class Meta:
-  #       model = models.User
-  #   fields = ['Email','Password']
-
 class SignUpform(forms.ModelForm):
   class Meta:
     model=models.User

@@ -16,9 +16,7 @@ class LoginView(FormView):
 
             if user is not None:
                   login(self.request, user)
-
-                  informations=user_models.User.objects.get(email=user.email)
-                  return render(self.request, 'home.html',{'informations':informations})
+                  return redirect('testproject:post_list')
             return super().form_vaild(form)
 
 class SignUpView(FormView):
@@ -32,7 +30,4 @@ class SignUpView(FormView):
             user=authenticate(self.request, username=email,password=password)
             if user is not None:
                   login(self.request, user)
-
-                  informations=user_models.User.objects.get(email=user.email)
-                  return render(self.request, 'home.html',{'informations':informations})
             super(SignUpView,self).form_valid(form)

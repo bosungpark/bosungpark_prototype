@@ -59,8 +59,10 @@ def __init__(self):
 
         
 def post_list(request):
+
     global startT
     global detail_page_id
+
 
     post_list=testData.objects.prefetch_related("user").all()
 
@@ -70,6 +72,7 @@ def post_list(request):
         post.save()
 
     post_list = testData.objects.prefetch_related("user").order_by("-importance").all()
+
 
     paginator= Paginator(post_list, 1)
     page_num= request.GET.get('page')

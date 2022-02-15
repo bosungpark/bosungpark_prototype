@@ -15,6 +15,9 @@ from scipy.stats import beta
 import math
 import time
 
+startT=0
+detail_page_id=0
+
 def __init__(self):
     print("init starts")
       # '0' as a reward from each ad
@@ -54,9 +57,11 @@ def __init__(self):
         post.save()
     print("init ends")
 
-            
         
 def post_list(request):
+    global startT
+    global detail_page_id
+
     post_list=testData.objects.prefetch_related("user").all()
 
     for post in post_list:
@@ -75,14 +80,41 @@ def post_list(request):
         for post in posts:
             post.impressions_cnt+=1
             post.save()
-            print(post.impressions_cnt)
+
 
     except PageNotAnInteger:
         posts=paginator.page(1)
     except EmptyPage:
         posts=paginator.page(paginator.num_pages)
+        
+    #방문 시간을 체크하는 부분    
+    #만약 직전에 방문한 페이지가 있다면
+    if detail_page_id:
+        #방문한 시간을 체크해 기록합니다.
+        data=get_object_or_404(testData, pk = detail_page_id)
+        data.residence_time+=time.time() - startT
+        data.save()
+        #저장이 완료되면 시작시간과 페이지 정보를 초기화 해줍니다. 이렇게 하지 않을 시, 실제보다 많은 시간이 찍히게 됩니다.    
+        startT = 0
+        detail_page_id=0
+    
+    print(f'function time: {time.time() - startT}ms')
 
     return render(request, "post_list.html",{'posts':posts})
+
+
+def click(request, id):
+    global startT
+    global detail_page_id
+
+    startT = time.time()
+    detail_page_id=id
+
+    data=get_object_or_404(testData, pk = id)
+    data.views_cnt+=1
+    data.save()
+   
+    return render(request, 'click.html',{"data":data})
 
 
 
@@ -160,43 +192,35 @@ def thompson_sampling():
 
     return ranks
 
-def click(request, id):
-       
-    data=get_object_or_404(testData, pk = id)
-    data.views_cnt+=1
-    start = time.time()
-
-    return render(request, 'click.html',{'start':start})
-
-def toHome(request):
+# def toHome(request):
     
-    start=request.start
-    end = time.time()
-    print( end - start,"sec")
+#     start=request.start
+#     end = time.time()
+#     print( end - start,"sec")
 
-    post_list=testData.objects.all()
-    for post in post_list:
-        score=post.views_cnt//post.impressions_cnt
-        post.importance=score
-        post.save()
-    post_list=testData.objects.all().order_by('-importance')
+#     post_list=testData.objects.all()
+#     for post in post_list:
+#         score=post.views_cnt//post.impressions_cnt
+#         post.importance=score
+#         post.save()
+#     post_list=testData.objects.all().order_by('-importance')
 
-    paginator= Paginator(post_list, 1)
-    page_num= request.GET.get('page')
+#     paginator= Paginator(post_list, 1)
+#     page_num= request.GET.get('page')
     
-    try:
-        posts=paginator.get_page(page_num)
-    except PageNotAnInteger:
-        posts=paginator.page(1)
-    except EmptyPage:
-        posts=paginator.page(paginator.num_pages)
+#     try:
+#         posts=paginator.get_page(page_num)
+#     except PageNotAnInteger:
+#         posts=paginator.page(1)
+#     except EmptyPage:
+#         posts=paginator.page(paginator.num_pages)
 
-    for post in posts:
-        post.impressions_cnt+=1
-        post.save()
-        print(post.impressions_cnt)
+#     for post in posts:
+#         post.impressions_cnt+=1
+#         post.save()
+#         print(post.impressions_cnt)
 
-    return render(request, "post_list.html",{'posts':posts})
+#     return render(request, "post_list.html",{'posts':posts})
 
    
 
